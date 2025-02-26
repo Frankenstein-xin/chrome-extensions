@@ -59,8 +59,10 @@ function drawRSCharts(pieChartDiv, barChartDiv, scoreInfo) {
     function aggTotal() {
 
         var statistics = {bad: 0, six: 0, seven: 0, eight: 0}
+        total = 0
         for (let i = 0; i < scoreInfo.RS.length; i++) {
             score = scoreInfo.RS[i].scorePoint
+            total += score
             if (score < 50) {
                 statistics.bad++;
             } else if (score >= 50 && score < 65) {
@@ -72,6 +74,8 @@ function drawRSCharts(pieChartDiv, barChartDiv, scoreInfo) {
             }
         }
 
+        pieChart.title.text = `全量统计 - 平均分: ${(total/scoreInfo.RS.length).toFixed(2)}`
+
         for (const slot in statistics) {
             pieChart.series[0].data.push({name: SCORE_SLOT_DISPLAY[slot], value: statistics[slot]})
         }
@@ -82,8 +86,10 @@ function drawRSCharts(pieChartDiv, barChartDiv, scoreInfo) {
 
     function aggByDifficulty() {
         statistics = {}
+        total = 0
         for (let i = 0; i < scoreInfo.RS.length; i++) {
             score = scoreInfo.RS[i].scorePoint
+            total += score
 
             difficulty = scoreInfo.RS[i].difficulty
             xAxiSlot = 'bad'
@@ -137,7 +143,6 @@ function drawRSCharts(pieChartDiv, barChartDiv, scoreInfo) {
 
             barChart.series.push(s)
         }
-
 
         let rsBarChart = echarts.init(barChartDiv);
         rsBarChart.setOption(barChart);
