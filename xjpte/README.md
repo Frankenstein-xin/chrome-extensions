@@ -1,6 +1,8 @@
 # 一个猩际PTE流式刷题得分汇总小工具
 ## 使用方式
-- git clone ""
+```bash
+git clone "https://github.com/Frankenstein-xin/chrome-extensions.git"
+```
 - chrome地址栏输入`chrome://extensions/`
 - 打开页面右上角的`开发者模式`开关
 - 然后点击左上角的`加载已解压的扩展程序`
