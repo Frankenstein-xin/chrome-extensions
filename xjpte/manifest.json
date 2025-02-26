@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "Xingji PTE score assistant",
+  "version": "1.0",
+  "description": "Score Xingji PTE's flow practice.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Xingji PTE score assistant",
+    "default_popup": "popup.html"
+  },
+  "icons": {
+    "16": "images/xj16.png",
+    "32": "images/xj32.png",
+    "48": "images/xj48.png",
+    "128": "images/xj128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ]
+    }
+  ],
+  "commands": {
+    "score-statistics": {
+      "suggested_key": {
+        "default": "Ctrl+U",
+        "mac": "Command+U"
+      },
+      "description": "Auto score"
+    }
+  }
+}
