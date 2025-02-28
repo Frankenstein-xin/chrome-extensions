@@ -21,23 +21,25 @@ async function score(port) {
 
 function scoreStatistics() {
 
-    function crawlRS() {
+    const exercisesSelector = '.SdAnswerItem-sc-1tg0il4.foEQIH'
+    const headerSelector = '.SdAnswerHeader-sc-1r9fit3.cJTuGI'
+    const exerciseIndexTextSelector = '.SdCheckbox-sc-fbb8kh.bHPWtJ.ant-checkbox-wrapper'
+    const footerSelector = '.SdFooter-sc-fs76i4.jGyiOK'
+    const scoreTextSelector = '.SdScoreBtn-sc-jl2hnn.ePposV'
 
-        scoreSlots = { '低于50': 0, '50-64': 0, '65-78': 0, '大于等于79': 0 };
-
-        exerciseDomList = document.querySelectorAll('.SdAnswerItem-sc-1tg0il4.foEQIH');
+    function crawlScoreRARS(difficultyIndex) {
+        exerciseDomList = document.querySelectorAll(exercisesSelector);
         exerciseInfoList = [];
         for (const e of exerciseDomList) {
-
-            headerDom = e.querySelector('.SdAnswerHeader-sc-1r9fit3.cJTuGI');
-            exerciseIndexText = headerDom.querySelector('.SdCheckbox-sc-fbb8kh.bHPWtJ.ant-checkbox-wrapper').getElementsByTagName('span')[2];
+            headerDom = e.querySelector(headerSelector);
+            exerciseIndexText = headerDom.querySelector(exerciseIndexTextSelector).getElementsByTagName('span')[2];
             exerciseIndexNumber = exerciseIndexText.textContent.split(".")[0];
 
-            exerciseDifficulty = headerDom.getElementsByTagName('div')[2].textContent;
+            exerciseDifficulty = headerDom.getElementsByTagName('div')[difficultyIndex].textContent;
 
 
-            footerDom = e.querySelector('.SdFooter-sc-fs76i4.jGyiOK');
-            scoreText = footerDom.querySelector('.SdScoreBtn-sc-jl2hnn.ePposV').textContent;
+            footerDom = e.querySelector(footerSelector);
+            scoreText = footerDom.querySelector(scoreTextSelector).textContent;
             score = Number(scoreText.split(" ")[1].split("/")[0]);
 
             exerciseInfo = { index: exerciseIndexNumber, difficulty: exerciseDifficulty, scorePoint: score}
@@ -49,7 +51,7 @@ function scoreStatistics() {
         return exerciseInfoList;
     }
 
-    const validScoreMap = { "RS 猩际流式刷题": "RS" }
+    const validScoreMap = { "RS 猩际流式刷题": "RS", "RA 猩际流式刷题": "RA"}
     const exerciseTypeSelector = '.ant-row-flex.ant-row-flex-space-between.ant-row-flex-middle .ant-col .left-col .right .subtitle'
 
     exerciseTypeText = document.querySelector(exerciseTypeSelector).textContent.trim();
@@ -57,8 +59,14 @@ function scoreStatistics() {
         const exerciseType = validScoreMap[exerciseTypeText]
         switch (exerciseType) {
             case 'RS':
-                rsScoreList = crawlRS();
+                // rsScoreList = crawlRS();
+                rsScoreList = crawlScoreRARS(2)
                 chrome.storage.local.set({scoreInfo: {'RS': rsScoreList}}, () => {
+                })
+                break;
+            case 'RA':
+                raScoreList = crawlScoreRARS(3);
+                chrome.storage.local.set({scoreInfo: {'RA': raScoreList}}, () => {
                 })
                 break;
             default:

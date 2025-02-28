@@ -55,13 +55,15 @@ barChart = {
     series: []
 };
 
-function drawRSCharts(pieChartDiv, barChartDiv, scoreInfo) {
+//---------------------------------------------------------------------------------------------------
+
+function drawRARSCharts(pieChartDiv, barChartDiv, scoreList) {
     function aggTotal() {
 
         var statistics = {bad: 0, six: 0, seven: 0, eight: 0}
         total = 0
-        for (let i = 0; i < scoreInfo.RS.length; i++) {
-            score = scoreInfo.RS[i].scorePoint
+        for (let i = 0; i < scoreList.length; i++) {
+            score = scoreList[i].scorePoint
             total += score
             if (score < 50) {
                 statistics.bad++;
@@ -74,24 +76,24 @@ function drawRSCharts(pieChartDiv, barChartDiv, scoreInfo) {
             }
         }
 
-        pieChart.title.text = `全量统计 - 平均分: ${(total/scoreInfo.RS.length).toFixed(2)}`
+        pieChart.title.text = `全量统计 - 平均分: ${(total/scoreList.length).toFixed(2)}`
 
         for (const slot in statistics) {
             pieChart.series[0].data.push({name: SCORE_SLOT_DISPLAY[slot], value: statistics[slot]})
         }
 
-        let rsPieChart = echarts.init(pieChartDiv);
-        rsPieChart.setOption(pieChart);
+        let pieCanvas = echarts.init(pieChartDiv);
+        pieCanvas.setOption(pieChart);
     }
 
     function aggByDifficulty() {
         statistics = {}
         total = 0
-        for (let i = 0; i < scoreInfo.RS.length; i++) {
-            score = scoreInfo.RS[i].scorePoint
+        for (let i = 0; i < scoreList.length; i++) {
+            score = scoreList[i].scorePoint
             total += score
 
-            difficulty = scoreInfo.RS[i].difficulty
+            difficulty = scoreList[i].difficulty
             xAxiSlot = 'bad'
 
             if (score < 50) {
@@ -119,7 +121,7 @@ function drawRSCharts(pieChartDiv, barChartDiv, scoreInfo) {
         barChart.title.text = '按难度汇总统计'
         // barChartData = []
         for (let difficulty of DIFFICULTY_SLOT) {
-            barChart.xAxis.data.push([difficulty])
+            barChart.xAxis.data.push(difficulty)
         }
 
         // barChartSeries = []
@@ -134,18 +136,20 @@ function drawRSCharts(pieChartDiv, barChartDiv, scoreInfo) {
             }
 
             for (let difficulty of DIFFICULTY_SLOT) {
-                scoreNum = statistics[scoreSlot][difficulty]
-                if (!scoreNum) {
-                    scoreNum = 0
+
+                scoreNum = 0
+                if (scoreSlot in statistics && difficulty in statistics[scoreSlot]) {
+                    scoreNum = statistics[scoreSlot][difficulty]
                 }
+
                 s.data.push(scoreNum)
             }
 
             barChart.series.push(s)
         }
 
-        let rsBarChart = echarts.init(barChartDiv);
-        rsBarChart.setOption(barChart);
+        let barCanvas = echarts.init(barChartDiv);
+        barCanvas.setOption(barChart);
 
         // barChartDiv.textContent = JSON.stringify(barChart)
     }
@@ -166,7 +170,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 chrome.storage.local.get(['scoreInfo'], (result) => {
                     if (result.scoreInfo) {
                         if ('RS' in result.scoreInfo) {
-                            drawRSCharts(pieChartDiv, barChartDiv, result.scoreInfo);
+                            // drawRSCharts(pieChartDiv, barChartDiv, result.scoreInfo);
+                            drawRARSCharts(pieChartDiv, barChartDiv, result.scoreInfo.RS)
+                        } else if ('RA' in result.scoreInfo) {
+                            drawRARSCharts(pieChartDiv, barChartDiv, result.scoreInfo.RA);
                         }
                     }
                 })
